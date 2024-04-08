@@ -11,6 +11,7 @@
     body {
       background-color: #fff
     }
+
     .container {
       text-align: center;
       margin-top: 20vh;
@@ -21,10 +22,12 @@
       max-width: 300px;
       min-width: 100px;
     }
+
     .version {
       font-size: 14px;
       color: #999;
     }
+
     .btn {
       margin: 20px auto 0px auto;
       height: 40px;
@@ -44,7 +47,7 @@
   <div class="container">
     <img src="/lovlin.jpg" class="logo" alt="Lovlin">
     <div class="version">
-      Version: <span id="version"></span>
+      <span id="version"></span>
     </div>
     <div id="btn" class="btn">
       Download
@@ -52,17 +55,44 @@
   </div>
 
   <script>
-    const btn = document.querySelector('#btn')
-    const versionSpan = document.querySelector('#version')
+    const btn = document.querySelector('#btn');
+    const versionSpan = document.querySelector('#version');
     let apkUrl = '';
+    const browserLang = navigator.language || navigator.userLanguage; // 获取浏览器语言设置
+
+    const translations = {
+      en: {
+        version: "Version",
+        download: "Download"
+      },
+      zh: {
+        version: "版本",
+        download: "下载"
+      },
+      ar: {
+        version: "الإصدار",
+        download: "تحميل"
+      }
+    };
+
+    let lang = translations.en;
+
+    if (browserLang.startsWith('zh')) {
+      lang = translations.zh;
+    } else if (browserLang.startsWith('ar')) {
+      lang = translations.ar;
+    }
+
+    versionSpan.textContent = lang.version + ': ';
+    btn.textContent = lang.download;
+
     const repoUrl = 'https://api.github.com/repos/LovlinAPP/LovinAPP/releases/latest';
     fetch(repoUrl)
       .then(r => r.json())
       .then(data => {
         const downloadUrl = data.assets[0].browser_download_url;
         const version = data.tag_name;
-        versionSpan.innerHTML = version;
-        console.log(downloadUrl); 
+        versionSpan.textContent += version; // 追加版本号
         apkUrl = downloadUrl;
       })
       .catch(error => {
@@ -71,7 +101,7 @@
 
     btn.addEventListener('click', () => {
       window.open(apkUrl, '_blank');
-    })
+    });
   </script>
 </body>
 
